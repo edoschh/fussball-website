@@ -1,51 +1,48 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("load-scorers").addEventListener("click", () => {
-        const league = document.getElementById("league-select").value;
-        const season = new Date().getFullYear();
-        displayTopScorers(league, season);
-    });
+    // Event-Listener für den Button
+    document.getElementById("load-scorers").addEventListener("click", fetchTopScorers);
 
-    // Standardmäßig die 1. Bundesliga anzeigen
-    const league = document.getElementById("league-select").value;
-    const season = new Date().getFullYear();
-    displayTopScorers(league, season);
+    // Standardmäßig die 1. Bundesliga laden
+    fetchTopScorers();
 });
 
-// Funktion zum Abrufen der Torschützendaten
-async function fetchGoalGetters(leagueShortcut, leagueSeason) {
-    const response = await fetch(`https://api.openligadb.de/getgoalgetters/${leagueShortcut}/${leagueSeason}`);
-    if (!response.ok) {
-        throw new Error("Fehler beim Abrufen der Torschützendaten");
-    }
-    return await response.json();
+function fetchTopScorers() {
+    const league = document.getElementById("league-select").value; // Ausgewählte Liga
+    const year = 2024; // Aktuelle Saison
+
+    // API-URL für Torschützen
+    const apiUrlScorers = `https://api.openligadb.de/getgoalgetters/${league}/${year}`;
+
+    // Nur Torschützen laden und anzeigen
+    fetch(apiUrlScorers)
+        .then(response => response.json())
+        .then(scorers => {
+            displayTopScorers(scorers);
+        })
+        .catch(error => {
+            console.error("Fehler bei der API-Abfrage:", error);
+            document.getElementById("rankings-container").innerHTML = `
+                <p class="text-danger text-center">Fehler beim Laden der Torschützen.</p>`;
+        });
 }
 
-// Funktion zum Anzeigen der Torschützen
-async function displayTopScorers(leagueShortcut, leagueSeason) {
-    try {
-        const goalGetters = await fetchGoalGetters(leagueShortcut, leagueSeason);
+function displayTopScorers(scorers) {
+    const container = document.getElementById("rankings-container");
+    container.innerHTML = "<h3 class='text-center'>Top 10 Torschützen</h3>";
 
-        const container = document.getElementById("rankings-container");
-        container.innerHTML = ""; // Vorherige Inhalte löschen
+    // Sortiere die Torschützen nach Toranzahl (absteigend) und zeige nur die Top 10
+    const sortedScorers = scorers.sort((a, b) => b.goalCount - a.goalCount).slice(0, 10);
 
-        goalGetters
-            .sort((a, b) => b.goalCount - a.goalCount) // Nach Toren sortieren
-            .slice(0, 10) // Top 10 Torschützen
-            .forEach((scorer, index) => {
-                const scorerCard = `
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">${index + 1}. ${scorer.goalGetterName}</h5>
-                                <p class="card-text">Tore: ${scorer.goalCount}</p>
-                            </div>
-                        </div>
-                    </div>`;
-                container.innerHTML += scorerCard;
-            });
-    } catch (error) {
-        console.error(error);
-        document.getElementById("rankings-container").innerHTML = `
-            <p class="text-danger text-center">Fehler beim Laden der Daten. Bitte versuchen Sie es später erneut.</p>`;
-    }
+    sortedScorers.forEach((scorer, index) => {
+        const scorerCard = `
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${index + 1}. ${scorer.goalGetterName}</h5>
+                        <p class="card-text">Tore: ${scorer.goalCount}</p>
+                    </div>
+                </div>
+            </div>`;
+        container.innerHTML += scorerCard;
+    });
 }
