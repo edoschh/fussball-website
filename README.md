@@ -21,6 +21,7 @@ Diese Website richtet sich an Fußballfans, die schnell und einfach auf aktuelle
 
 ### Features
 - **Dynamische Daten**: Ergebnisse und Statistiken werden in Echtzeit aus der OpenLigaDB-API abgerufen.
+- **Fallback-Mechanismus**: In der Datei `statistik.js` wurde ein Fallback integriert, um Daten aus 2024 anzuzeigen, da die API noch keine Daten für 2025 bereitstellt.
 - **Responsive Design**: Die Website ist für Desktop- und Mobilgeräte optimiert.
 - **Intuitive Navigation**: Einfacher Zugriff auf verschiedene Seiten wie Tabellenstände und Top-Torschützen.
 
@@ -35,6 +36,8 @@ Diese Website richtet sich an Fußballfans, die schnell und einfach auf aktuelle
 ## API-Integration
 Die Website verwendet die OpenLigaDB-API, um aktuelle Fußballstatistiken bereitzustellen. Die API-Endpunkte werden mithilfe der Fetch API abgefragt, um dynamische Inhalte wie Tabellen und Torschützenlisten anzuzeigen.
 
+**Wichtig:** Da die API derzeit keine Daten für 2025 bereitstellt, wurde in der Datei `statistik.js` ein Fallback-Mechanismus integriert. Dieser sorgt dafür, dass automatisch Daten aus 2024 angezeigt werden, falls für das aktuelle Jahr keine Informationen verfügbar sind.
+
 
 
 ## Verzeichnisstruktur
@@ -44,7 +47,7 @@ Die Website verwendet die OpenLigaDB-API, um aktuelle Fußballstatistiken bereit
     - `styles.css`  # Styling der Seiten
   - `js/`
     - `script.js`   # Funktionen für Fußball-Daten
-    - `statistik.js` # Funktionen für Tabellenstatistiken
+    - `statistik.js` # Funktionen für Tabellenstatistiken mit Fallback
     - `torschuetzen.js` # Funktionen für Top-Torschützen
   - `index.html`    # Startseite der Website
   - `startseite.html` # Landing Page mit Funktionsübersicht
